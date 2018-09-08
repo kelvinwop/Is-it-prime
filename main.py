@@ -1,4 +1,4 @@
-def is_prime(p):
+def is_prime(p, DEBUG = False):
     """Finds out if a number is prime.
     
     if p is a prime, let s be the maximal power of 2 dividing p-1,
@@ -17,15 +17,24 @@ def is_prime(p):
     #list of numbers that guarantee correctness up to 2^64
     a_list = {2, 325, 9375, 28178, 450775, 9780504, 1795265022}
 
-    #claim composite for 0 and 1
-    if p in (0,1):
+    #
+    #program dun goofs if witness is greater or equal to p-2 so we need to hardcode in tiny values
+    #claim composite for 0, 1, 4
+    #
+    if p in (0, 1, 4):
         return False
+
+    #
+    #claim prime for 2, 3
+    #
+    if p in (2, 3):
+        return True
 
     #given the integers p, s, d
     #find p - 1 = (2 ^ s) * d, such that s is as large as possible
     d = p - 1
     s = 0
-    if d % 2 == 0:
+    while d % 2 == 0:
         d = d // 2
         s += 1
     
@@ -42,7 +51,10 @@ def is_prime(p):
         #conditions not met, 11/10 chance must be composite
         return True
 
-    print(list(__check_composite(p, d, s, a) for a in a_list))
-    return not any (__check_composite(p, d, s, a) for a in a_list)
+    #debugging the crazy
+    if DEBUG:
+        print(p, d, s)
+        print(list(__check_composite(p, d, s, a) for a in a_list if a<p-2))
+    return not any (__check_composite(p, d, s, a) for a in a_list if a<p-2)
 
-print(is_prime(3))
+print([i for i in range(1000) if is_prime(i)])
